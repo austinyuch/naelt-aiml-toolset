@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <title>司法正義 AI 三模組技術提案書</title>
+    <style>
+      body {
+        font-family: "Noto Sans CJK TC", sans-serif;
+        line-height: 1.8;
+        padding: 40px;
+        background: #f9f9f9;
+        color: #333;
+      }
+      h1,
+      h2,
+      h3 {
+        color: #2c3e50;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 20px 0;
+      }
+      th,
+      td {
+        border: 1px solid #aaa;
+        padding: 10px;
+        text-align: left;
+      }
+      th {
+        background-color: #eee;
+      }
+      ul {
+        margin-top: 0;
+      }
+      code {
+        background: #eee;
+        padding: 2px 4px;
+        border-radius: 4px;
+      }
+      .section {
+        margin-bottom: 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>司法正義 AI 三模組技術提案書</h1>
+
+    <div class="section">
+      <h2>一、目標與目的</h2>
+      <ul>
+        <li>透過 AI agent 推動反廢死與打擊司法貪腐的雙重目標。</li>
+        <li>建立自動化系統以提升輿情掌握、論述生成與司法資料分析能力。</li>
+        <li>強化民間監督與社群動員能力，促進法治與正義落實。</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>二、方案選擇比較與決策</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>模組</th>
+            <th>技術難度</th>
+            <th>成本</th>
+            <th>社會影響力</th>
+            <th>優先性</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>輿情監測</td>
+            <td>低</td>
+            <td>低</td>
+            <td>高</td>
+            <td>⭐️⭐️⭐️⭐️</td>
+          </tr>
+          <tr>
+            <td>論述生成器</td>
+            <td>中</td>
+            <td>中</td>
+            <td>高</td>
+            <td>⭐️⭐️⭐️⭐️</td>
+          </tr>
+          <tr>
+            <td>判決分析</td>
+            <td>中高</td>
+            <td>中</td>
+            <td>高</td>
+            <td>⭐️⭐️⭐️⭐️</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>根據技術可行性與社會回報比，決策優先開發上述三模組。</p>
+    </div>
+
+    <div class="section">
+      <h2>三、模組規劃架構</h2>
+      <h3>模組一：輿情監測模組</h3>
+      <ul>
+        <li>資料來源：PTT、Facebook、Google News</li>
+        <li>技術組成：Scraper + BERT 情緒分析 + PostgreSQL + Streamlit</li>
+      </ul>
+
+      <h3>模組二：反廢死論述生成器</h3>
+      <ul>
+        <li>技術組成：GPT-4 + Prompt Template + 社群 API</li>
+      </ul>
+
+      <h3>模組三：判決資料分析模組</h3>
+      <ul>
+        <li>資料來源：司法院法學資料庫</li>
+        <li>技術組成：LexNLP + 判決抽取 + 統計分析 + Superset</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>四、AWS 架構圖（文字版）</h2>
+      <ul>
+        <li>使用 <code>AWS EC2</code> 部署 FastAPI 後端</li>
+        <li>使用 <code>AWS RDS（PostgreSQL）</code> 儲存分析資料</li>
+        <li>使用 <code>AWS S3</code> 儲存爬蟲原始資料與生成內容</li>
+        <li>使用 <code>AWS Lambda</code> 處理定時任務（如每日輿情摘要）</li>
+        <li>使用 <code>AWS CloudWatch</code> 監控系統運作</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>五、開發任務分工表（4週）</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>週次</th>
+            <th>任務內容</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>第1週</td>
+            <td>資料來源串接（PTT、判決書）、Prompt設計</td>
+          </tr>
+          <tr>
+            <td>第2週</td>
+            <td>NLP模型訓練與測試、資料庫建置</td>
+          </tr>
+          <tr>
+            <td>第3週</td>
+            <td>視覺化儀表板開發、論述生成介面</td>
+          </tr>
+          <tr>
+            <td>第4週</td>
+            <td>API整合、社群發布串接、測試與部署</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>

@@ -43,15 +43,15 @@
     - 支援最多 3 次重試，間隔 1s, 2s, 4s
     - _需求: 2.5, 9.3_
 
-- [ ] 4. 實作外部客戶端（TDD）
+- [x] 4. 實作外部客戶端（TDD）
 
-  - [ ] 4.1 實作新聞 API 客戶端
+  - [x] 4.1 實作新聞 API 客戶端
     - 建立 tests/unit/clients/NewsAPIClient.test.ts 使用 Mock 測試
     - 建立 src/clients/NewsAPIClient.ts 實作 NewsAPIClient 類別
     - 整合 Google News API
     - 實作錯誤處理和重試機制
     - _需求: 2.1, 2.5, 9.3_
-  - [ ] 4.2 實作 AWS Bedrock 客戶端
+  - [x] 4.2 實作 AWS Bedrock 客戶端
     - 建立 tests/unit/clients/BedrockClient.test.ts 使用 Mock 測試
     - 建立 src/clients/BedrockClient.ts 實作 BedrockClient 類別
     - 整合 AWS Bedrock Claude Sonnet 4.5 API
@@ -59,9 +59,9 @@
     - 實作錯誤處理和串流支援
     - _需求: 7.1, 7.4, 7.5, 9.4_
 
-- [ ] 5. 實作提示模板系統（TDD）
+- [x] 5. 實作提示模板系統（TDD）
 
-  - [ ] 5.1 建立 Markdown 提示模板檔案
+  - [x] 5.1 建立 Markdown 提示模板檔案
     - 建立 prompts/ 目錄結構（topics/, platforms/, variants/）
     - 建立 prompts/topics/victim_rights.md（受害者權益模板）
     - 建立 prompts/topics/anti_death_penalty.md（反廢死模板）
@@ -74,26 +74,26 @@
     - 建立 prompts/variants/call_to_action.md（行動呼籲變體）
     - 建立 prompts/refine.md（內容精煉模板）
     - _需求: 7.2, 7.3, 8.1, 8.2, 8.3_
-  - [ ] 5.2 撰寫模板載入器測試
+  - [x] 5.2 撰寫模板載入器測試
     - 建立 tests/unit/prompts/PromptTemplateLoader.test.ts 測試模板載入
     - 建立 tests/unit/prompts/PromptBuilder.test.ts 測試 prompt 建構
     - _需求: 7.2, 7.3, 8.1, 8.2, 8.3_
-  - [ ] 5.3 實作模板載入器和建構器
+  - [x] 5.3 實作模板載入器和建構器
     - 建立 src/prompts/PromptTemplateLoader.ts 實作模板載入邏輯
     - 建立 src/prompts/PromptBuilder.ts 實作 prompt 建構邏輯
     - 實作變數替換和新聞背景格式化
     - 實作模板快取機制
     - _需求: 7.2, 7.3, 8.1, 8.2, 8.3_
 
-- [ ] 6. 實作服務層（TDD）
+- [x] 6. 實作服務層（TDD）
 
-  - [ ] 6.1 實作新聞搜尋服務
+  - [x] 6.1 實作新聞搜尋服務
     - 建立 tests/unit/services/NewsSearchService.test.ts 使用 Mock 測試
     - 建立 src/services/NewsSearchService.ts 實作 NewsSearchService 類別
     - 實作 searchNews 方法，呼叫 NewsAPIClient
     - 整合快取機制
     - _需求: 2.1, 2.3, 2.4_
-  - [ ] 6.2 實作內容生成服務
+  - [x] 6.2 實作內容生成服務
     - 建立 tests/unit/services/ContentGenerationService.test.ts 使用 Mock LLM 測試
     - 建立 src/services/ContentGenerationService.ts 實作 ContentGenerationService 類別
     - 實作 generateContent 方法，生成 3 個內容變體
@@ -101,13 +101,13 @@
     - 整合 BedrockClient 和提示模板
     - 實作平台格式驗證
     - _需求: 3.1, 3.4, 3.5, 4.1, 4.3, 8.4, 8.5_
-  - [ ] 6.3 實作模板管理服務
+  - [x] 6.3 實作模板管理服務
     - 建立 tests/unit/services/TemplateManagementService.test.ts 測試模板管理
     - 建立 src/services/TemplateManagementService.ts 實作 TemplateManagementService 類別
     - 實作 getTemplates 和 getTemplateById 方法
     - 支援多語言（zh_TW, en）
     - _需求: 5.1, 5.2, 5.3, 5.4, 5.5_
-  - [ ] 6.4 實作內容編排器
+  - [x] 6.4 實作內容編排器
     - 建立 tests/unit/services/ContentOrchestrator.test.ts 測試編排邏輯
     - 建立 src/services/ContentOrchestrator.ts 實作 ContentOrchestrator 類別
     - 協調各服務的業務邏輯

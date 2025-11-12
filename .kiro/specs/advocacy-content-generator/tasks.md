@@ -202,12 +202,12 @@
   - 建立 AWS 部署指南
   - _需求: 1.1, 6.4_
 
-- [ ]\* 14. 撰寫整合測試
+- [x]\* 14. 撰寫整合測試
 
-  - [ ]\* 14.1 Docker 環境整合測試
+  - [x]\* 14.1 Docker 環境整合測試
     - 建立 tests/integration/api.integration.test.ts 測試完整 API 流程
     - 建立 tests/integration/mcp.integration.test.ts 測試 MCP 工具功能
     - 測試外部服務整合（使用真實 API）
-  - [ ]\* 14.2 效能測試
+  - [x]\* 14.2 效能測試
     - 建立 tests/performance/baseline.test.ts 測試回應時間基準
     - 測試並發處理能力

@@ -11,8 +11,12 @@
     "start:api": "SERVICE_MODE=api-only node dist/index.js",
     "start:mcp": "SERVICE_MODE=mcp-only node dist/index.js",
     "test": "jest",
+    "test:unit": "jest tests/unit",
+    "test:integration": "jest tests/integration --runInBand",
+    "test:performance": "jest tests/performance --runInBand",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "test:all": "npm run test:unit && npm run test:integration && npm run test:performance",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
     "type-check": "tsc --noEmit"

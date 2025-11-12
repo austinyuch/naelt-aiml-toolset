@@ -1,5 +1,5 @@
 # Multi-stage build for production optimization
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 
 WORKDIR /app
 
@@ -18,7 +18,7 @@ COPY prompts/ ./prompts/
 RUN npm run build
 
 # Final production image
-FROM node:20-alpine
+FROM node:24-alpine
 
 WORKDIR /app
 
@@ -38,8 +38,8 @@ COPY prompts/ ./prompts/
 # Create cache directory
 RUN mkdir -p /mnt/efs/cache
 
-# Create non-root user
-RUN adduser -D -u 1000 appuser && \
+# Create non-root user (use a different UID to avoid conflicts)
+RUN adduser -D -u 10001 appuser && \
     chown -R appuser:appuser /app && \
     chown -R appuser:appuser /mnt/efs/cache
 

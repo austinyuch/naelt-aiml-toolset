@@ -114,63 +114,63 @@
     - 實作依賴注入模式
     - _需求: 3.1, 4.1_
 
-- [ ] 7. 實作 Express REST API（TDD）
+- [x] 7. 實作 Express REST API（TDD）
 
-  - [ ] 7.1 建立健康檢查端點
+  - [x] 7.1 建立健康檢查端點
     - 建立 tests/unit/api/routes/health.test.ts 測試健康檢查
     - 建立 src/api/routes/health.ts 實作健康檢查端點
     - _需求: 10.3_
-  - [ ] 7.2 建立新聞搜尋路由
+  - [x] 7.2 建立新聞搜尋路由
     - 建立 tests/unit/api/routes/news.test.ts 測試新聞搜尋端點
     - 建立 src/api/routes/news.ts 實作新聞搜尋端點
     - _需求: 1.2_
-  - [ ] 7.3 建立內容生成和精煉路由
+  - [x] 7.3 建立內容生成和精煉路由
     - 建立 tests/unit/api/routes/content.test.ts 測試內容端點
     - 建立 src/api/routes/content.ts 實作內容生成和精煉端點
     - _需求: 1.3, 1.4_
-  - [ ] 7.4 建立模板列表路由
+  - [x] 7.4 建立模板列表路由
     - 建立 tests/unit/api/routes/templates.test.ts 測試模板端點
     - 建立 src/api/routes/templates.ts 實作模板列表端點
     - _需求: 1.5_
-  - [ ] 7.5 實作中介軟體
+  - [x] 7.5 實作中介軟體
     - 建立 tests/unit/api/middleware/auth.test.ts 測試認證中介軟體
     - 建立 src/api/middleware/auth.ts 實作 API Key 認證中介軟體
     - 建立 tests/unit/api/middleware/errorHandler.test.ts 測試錯誤處理
     - 建立 src/api/middleware/errorHandler.ts 實作錯誤處理中介軟體
     - 建立 src/api/middleware/monitoring.ts 實作監控中介軟體（日誌記錄、效能追蹤）
     - _需求: 9.1, 9.5_
-  - [ ] 7.6 實作 Express 應用程式
+  - [x] 7.6 實作 Express 應用程式
     - 建立 tests/unit/api/app.test.ts 測試應用程式配置
     - 建立 src/api/app.ts 實作 Express 應用程式配置
     - 整合所有路由和中介軟體
     - 實作 OpenAPI 文件配置（swagger-jsdoc）
     - _需求: 1.1, 10.3_
 
-- [ ] 8. 實作 MCP Server（TDD）
+- [x] 8. 實作 MCP Server（TDD）
 
-  - [ ] 8.1 撰寫 MCP Server 測試
+  - [x] 8.1 撰寫 MCP Server 測試
     - 建立 tests/unit/mcp/server.test.ts 測試 MCP 工具
     - _需求: 6.1, 6.2, 6.3, 6.4, 6.5_
-  - [ ] 8.2 實作 MCP Server
+  - [x] 8.2 實作 MCP Server
     - 建立 src/mcp/server.ts 實作 MCP 伺服器
     - 使用 @modelcontextprotocol/sdk 定義 MCP 工具（search_news, generate_content, refine_content）
     - 實作 MCP 工具與 Express 業務邏輯的整合（共享 ContentOrchestrator）
     - 建立 src/mcp/index.ts MCP 入口
     - _需求: 6.1, 6.2, 6.3, 6.4, 6.5_
 
-- [ ] 9. 實作統一服務啟動
+- [x] 9. 實作統一服務啟動
 
-  - [ ] 9.1 撰寫啟動邏輯測試
+  - [x] 9.1 撰寫啟動邏輯測試
     - 建立 tests/unit/index.test.ts 測試服務啟動邏輯
     - _需求: 10.1, 10.4, 10.5_
-  - [ ] 9.2 實作主入口
+  - [x] 9.2 實作主入口
     - 建立 src/index.ts 應用程式入口
     - 實作服務模式選擇（unified, api-only, mcp-only）
     - 實作優雅關閉處理（SIGTERM, SIGINT）
     - 實作啟動日誌記錄
     - _需求: 10.1, 10.4, 10.5_
 
-- [ ] 10. 實作日誌與監控
+- [x] 10. 實作日誌與監控
 
   - 建立 src/core/logger.ts 整合 winston 結構化日誌
   - 建立 src/core/metrics.ts 實作效能監控指標（prom-client）
@@ -178,7 +178,7 @@
   - 實作日誌脫敏
   - _需求: 9.5, 10.4_
 
-- [ ] 11. 建立 Docker 部署配置
+- [x] 11. 建立 Docker 部署配置
 
   - 建立 Dockerfile（多階段建構）
   - 建立 docker-compose.yml（本地開發）
@@ -186,7 +186,7 @@
   - 設定環境變數和掛載點
   - _需求: 10.1, 10.2_
 
-- [ ] 12. 建立 AWS ECS 部署配置
+- [x] 12. 建立 AWS ECS 部署配置
 
   - 建立 task-definition.json（ECS Fargate Task Definition）
   - 建立 .github/workflows/deploy.yml（CI/CD Pipeline）
@@ -194,7 +194,7 @@
   - 配置 EFS 檔案系統掛載
   - _需求: 10.1, 10.2_
 
-- [ ] 13. 撰寫專案文件
+- [x] 13. 撰寫專案文件
 
   - 建立 README.md 包含安裝、配置和使用說明
   - 建立 API 使用範例

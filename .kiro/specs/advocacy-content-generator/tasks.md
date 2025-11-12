@@ -1,6 +1,6 @@
 # 實作計畫
 
-- [-] 1. 建立專案結構和核心配置
+- [x] 1. 建立專案結構和核心配置
 
   - 建立專案目錄結構（src/api, src/services, src/clients, src/types, src/core, src/prompts, src/mcp）
   - 初始化 Node.js 專案並設定 package.json 與 TypeScript 配置
@@ -9,35 +9,35 @@
   - 設定 Jest 測試框架和 ESLint/TypeScript 配置
   - _需求: 10.1, 10.2, 10.4_
 
-- [ ] 2. 實作 TypeScript 型別定義（TDD Red Phase）
+- [x] 2. 實作 TypeScript 型別定義（TDD）
 
-  - [ ] 2.1 撰寫型別定義測試
+  - [x] 2.1 撰寫型別定義測試（TDD Red Phase）
     - 建立 tests/unit/types.test.ts 測試型別正確性
     - _需求: 2.2, 3.2, 4.2, 5.2, 9.2_
-  - [ ] 2.2 實作型別定義（TDD Green Phase）
+  - [x] 2.2 實作型別定義（TDD Green Phase）
     - 建立 src/types/requests.ts 定義請求介面（NewsSearchRequest, ContentGenerationRequest, ContentRefineRequest）
     - 建立 src/types/responses.ts 定義回應介面（NewsSearchResponse, ContentGenerationResponse, ErrorResponse）
     - 建立 src/types/domain.ts 定義領域模型（NewsArticle, ContentVariant, TopicTemplate, PlatformType）
     - 實作 Zod schema 進行執行時驗證
     - _需求: 2.2, 3.2, 4.2, 5.2, 9.2_
 
-- [ ] 3. 實作核心工具模組（TDD）
+- [x] 3. 實作核心工具模組（TDD）
 
-  - [ ] 3.1 實作例外處理類別
+  - [x] 3.1 實作例外處理類別
     - 建立 tests/unit/core/exceptions.test.ts 測試自訂例外
     - 建立 src/core/exceptions.ts 定義自訂例外（APIException, ValidationError, NewsAPIUnavailable, LLMProviderError, RateLimitExceeded）
     - _需求: 9.1, 9.2, 9.3, 9.4_
-  - [ ] 3.2 實作快取管理器
+  - [x] 3.2 實作快取管理器
     - 建立 tests/unit/core/cache.test.ts 測試快取功能
     - 建立 src/core/cache.ts 實作 CacheManager 類別
     - 實作 L1 記憶體快取（LRU cache）和 L2 檔案系統快取（EFS）
     - _需求: 3.5, 4.1_
-  - [ ] 3.3 實作速率限制器
+  - [x] 3.3 實作速率限制器
     - 建立 tests/unit/core/rateLimiter.test.ts 測試速率限制邏輯
     - 建立 src/core/rateLimiter.ts 實作 RateLimiter 類別
     - 實作精煉次數限制（5 次/小時）
     - _需求: 4.4, 4.5_
-  - [ ] 3.4 實作重試機制
+  - [x] 3.4 實作重試機制
     - 建立 tests/unit/core/retry.test.ts 測試重試邏輯
     - 建立 src/core/retry.ts 實作指數退避重試函數
     - 支援最多 3 次重試，間隔 1s, 2s, 4s

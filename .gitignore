@@ -81,6 +81,21 @@ yarn-debug.log*
 yarn-error.log*
 .npm
 .eslintcache
+package-lock.json
+yarn.lock
+.pnp
+.pnp.js
+
+# TypeScript
+dist/
+*.tsbuildinfo
+
+# Testing
+coverage/
+.nyc_output/
+
+# Cache
+.cache/
 
 # IDEs
 .vscode/

@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: advocacy-content-generator
+    ports:
+      - "${PORT:-8000}:8000"
+    environment:
+      - SERVICE_MODE=${SERVICE_MODE:-unified}
+      - PORT=8000
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - BEDROCK_MODEL_ID=${BEDROCK_MODEL_ID:-anthropic.claude-sonnet-4-5-20250929-v1:0}
+      - NEWS_API_KEY=${NEWS_API_KEY}
+      - API_KEYS=${API_KEYS}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - CACHE_DIR=/app/.cache
+    volumes:
+      # Mount cache directory
+      - cache-data:/app/.cache
+      # Mount AWS credentials for local development (read-only)
+      - ~/.aws:/home/appuser/.aws:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  cache-data:
+    driver: local

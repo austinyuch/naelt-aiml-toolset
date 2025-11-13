@@ -1,0 +1,145 @@
+{
+  "models": {
+    "primary": {
+      "id": "anthropic.claude-haiku-4-5-20251001-v1:0",
+      "name": "Claude Haiku 4.5",
+      "description": "最新的 Claude Haiku 4.5 模型，提供最佳的速度與品質平衡",
+      "use_cases": [
+        "快速內容生成",
+        "生產環境工作負載",
+        "成本效益的高品質輸出",
+        "即時回應需求",
+        "最佳速度品質比"
+      ],
+      "pricing": {
+        "input_per_1m_tokens": 1.00,
+        "output_per_1m_tokens": 5.00,
+        "currency": "USD"
+      },
+      "region": "us-east-1",
+      "max_tokens": 8192,
+      "context_window": 200000
+    },
+    "secondary": {
+      "id": "anthropic.claude-sonnet-4-5-20250929-v1:0",
+      "name": "Claude Sonnet 4.5",
+      "description": "Claude Sonnet 4.5，用於需要最高品質的場景",
+      "use_cases": [
+        "複雜推理任務",
+        "最高品質要求",
+        "關鍵內容的備用方案"
+      ],
+      "pricing": {
+        "input_per_1m_tokens": 3.00,
+        "output_per_1m_tokens": 15.00,
+        "currency": "USD"
+      },
+      "region": "us-east-1",
+      "max_tokens": 8192,
+      "context_window": 200000
+    },
+    "fallback": {
+      "id": "anthropic.claude-3-haiku-20240307-v1:0",
+      "name": "Claude 3 Haiku",
+      "description": "快速且經濟的模型，適合簡單查詢和開發測試",
+      "use_cases": [
+        "快速回應",
+        "簡單查詢",
+        "成本優化",
+        "開發/測試環境"
+      ],
+      "pricing": {
+        "input_per_1m_tokens": 0.25,
+        "output_per_1m_tokens": 1.25,
+        "currency": "USD"
+      },
+      "region": "us-east-1",
+      "max_tokens": 4096,
+      "context_window": 200000
+    },
+    "alternative": {
+      "id": "anthropic.claude-3-5-haiku-20241022-v1:0",
+      "name": "Claude 3.5 Haiku",
+      "description": "速度與品質的平衡選擇",
+      "use_cases": [
+        "中等複雜度任務",
+        "成本效益的生產環境",
+        "快速回應需求"
+      ],
+      "pricing": {
+        "input_per_1m_tokens": 1.00,
+        "output_per_1m_tokens": 5.00,
+        "currency": "USD"
+      },
+      "region": "us-east-1",
+      "max_tokens": 8192,
+      "context_window": 200000
+    }
+  },
+  "selection_strategy": {
+    "default": "primary",
+    "fallback_order": [
+      "primary",
+      "secondary",
+      "alternative",
+      "fallback"
+    ],
+    "cost_optimization_mode": {
+      "enabled": false,
+      "preferred_model": "alternative",
+      "description": "啟用時優先使用較經濟的模型"
+    },
+    "balanced_mode": {
+      "enabled": true,
+      "preferred_model": "primary",
+      "description": "啟用時使用速度與品質平衡的模型 (Haiku 4.5)"
+    }
+  },
+  "usage_guidelines": {
+    "primary_model": {
+      "when_to_use": [
+        "生產環境的內容生成",
+        "需要最高品質輸出",
+        "複雜的推理任務",
+        "多步驟內容精煉"
+      ],
+      "when_not_to_use": [
+        "簡單的查詢",
+        "開發測試",
+        "成本敏感的場景"
+      ]
+    },
+    "fallback_model": {
+      "when_to_use": [
+        "開發和測試",
+        "簡單的內容生成",
+        "快速原型開發",
+        "成本優化場景"
+      ],
+      "when_not_to_use": [
+        "需要高品質輸出",
+        "複雜的推理任務",
+        "生產環境的關鍵功能"
+      ]
+    }
+  },
+  "monitoring": {
+    "track_metrics": [
+      "token_usage",
+      "response_time",
+      "cost_per_request",
+      "error_rate",
+      "model_selection_distribution"
+    ],
+    "cost_alerts": {
+      "daily_threshold_usd": 10.0,
+      "monthly_threshold_usd": 200.0
+    }
+  },
+  "metadata": {
+    "last_updated": "2025-11-13",
+    "configuration_version": "1.0.0",
+    "region": "us-east-1",
+    "account_id": "533267166136"
+  }
+}

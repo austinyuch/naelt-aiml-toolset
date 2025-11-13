@@ -1,0 +1,54 @@
+╭────── Traceback (most recent call last) ───────╮
+│ /home/ac/.pyenv/versions/3.13.3/lib/python3.13 │
+│ /site-packages/bedrock_agentcore_starter_toolk │
+│ it/cli/runtime/commands.py:919 in launch       │
+│                                                │
+│    916 │                                       │
+│    917 │   # Load config early to determine de │
+│    918 │   project_config = load_config(config │
+│ ❱  919 │   agent_config = project_config.get_a │
+│    920 │   deployment_type = agent_config.depl │
+│    921 │                                       │
+│    922 │   # Validate deployment type compatib │
+│                                                │
+│ ╭────────────────── locals ──────────────────╮ │
+│ │              agent = 'advocacy-content-ge… │ │
+│ │ auto_update_on_conf… False                 │ │
+│ │                    =                       │ │
+│ │         code_build = False                 │ │
+│ │        config_path = PosixPath('/home/ac/… │ │
+│ │               envs = None                  │ │
+│ │ force_rebuild_deps = False                 │ │
+│ │              local = False                 │ │
+│ │        local_build = False                 │ │
+│ │     project_config = BedrockAgentCoreConf… │ │
+│ │                      │                     │ │
+│ │                      default_agent=None,   │ │
+│ │                      │   agents={}         │ │
+│ │                      )                     │ │
+│ ╰────────────────────────────────────────────╯ │
+│                                                │
+│ /home/ac/.pyenv/versions/3.13.3/lib/python3.13 │
+│ /site-packages/bedrock_agentcore_starter_toolk │
+│ it/utils/runtime/schema.py:281 in              │
+│ get_agent_config                               │
+│                                                │
+│   278 │   │   │   if available:                │
+│   279 │   │   │   │   raise ValueError(f"Agent │
+│   280 │   │   │   else:                        │
+│ ❱ 281 │   │   │   │   raise ValueError("No age │
+│   282 │   │                                    │
+│   283 │   │   return self.agents[target_name]  │
+│   284                                          │
+│                                                │
+│ ╭────────────────── locals ──────────────────╮ │
+│ │  agent_name = 'advocacy-content-generator' │ │
+│ │   available = []                           │ │
+│ │        self = BedrockAgentCoreConfigSchem… │ │
+│ │               │   default_agent=None,      │ │
+│ │               │   agents={}                │ │
+│ │               )                            │ │
+│ │ target_name = 'advocacy-content-generator' │ │
+│ ╰────────────────────────────────────────────╯ │
+╰────────────────────────────────────────────────╯
+ValueError: No agents configured

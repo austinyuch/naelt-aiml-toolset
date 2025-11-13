@@ -1,0 +1,49 @@
+# AgentCore Configuration Example
+# Copy this file to .bedrock_agentcore.yaml and update with your values
+# Run ./scripts/configure-agentcore.sh to generate automatically
+
+name: advocacy-content-generator
+protocol: MCP
+version: 1.0.0
+
+runtime:
+  # Memory allocation in MB (512, 1024, 2048, 4096)
+  memory: 1024
+  
+  # Timeout in seconds (max 3600 = 60 minutes)
+  timeout: 3600
+  
+  # Environment variables for the runtime
+  environment:
+    SERVICE_MODE: mcp-only
+    MCP_TRANSPORT: streamable-http
+    AWS_REGION: us-east-1
+    LOG_LEVEL: info
+    PORT: "8000"
+
+# IAM role for runtime execution
+# Replace ACCOUNT_ID with your AWS account ID
+execution_role: arn:aws:iam::ACCOUNT_ID:role/AgentCoreExecutionRole-advocacy-content-generator
+
+container:
+  # ECR image URI
+  # Replace ACCOUNT_ID with your AWS account ID
+  image: ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/advocacy-content-generator:latest
+  
+  # Container port (must match PORT environment variable)
+  port: 8000
+  
+  # Dockerfile location
+  dockerfile: Dockerfile
+
+# OAuth authentication configuration
+# Get these values from cognito-credentials.txt after running setup-cognito.sh
+authentication:
+  type: oauth
+  
+  # Cognito discovery URL
+  # Format: https://cognito-idp.REGION.amazonaws.com/POOL_ID/.well-known/openid-configuration
+  discovery_url: https://cognito-idp.us-east-1.amazonaws.com/POOL_ID/.well-known/openid-configuration
+  
+  # Cognito app client ID
+  client_id: CLIENT_ID

@@ -8,6 +8,7 @@ dotenv.config();
 const ConfigSchema = z.object({
   // Service configuration
   serviceMode: z.enum(['unified', 'api-only', 'mcp-only']).default('unified'),
+  mcpTransport: z.enum(['stdio', 'streamable-http']).default('stdio'),
   port: z.coerce.number().default(8000),
   host: z.string().default('0.0.0.0'),
 
@@ -43,6 +44,7 @@ export type Config = z.infer<typeof ConfigSchema>;
 function loadConfig(): Config {
   const rawConfig = {
     serviceMode: process.env.SERVICE_MODE,
+    mcpTransport: process.env.MCP_TRANSPORT,
     port: process.env.PORT,
     host: process.env.HOST,
     awsRegion: process.env.AWS_REGION,

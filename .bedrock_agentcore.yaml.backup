@@ -1,0 +1,28 @@
+# AgentCore Configuration for advocacy-content-generator
+# Generated: Fri Nov 14 12:46:10 AM CST 2025
+
+name: advocacy-content-generator
+protocol: MCP
+version: 1.0.0
+
+runtime:
+  memory: 1024
+  timeout: 3600  # 60 minutes
+  environment:
+    SERVICE_MODE: mcp-only
+    MCP_TRANSPORT: streamable-http
+    AWS_REGION: us-east-1
+    LOG_LEVEL: info
+    PORT: "8000"
+
+execution_role: arn:aws:iam::533267166136:role/AgentCoreExecutionRole-advocacy-content-generator
+
+container:
+  image: 533267166136.dkr.ecr.us-east-1.amazonaws.com/advocacy-content-generator:latest
+  port: 8000
+  dockerfile: Dockerfile
+
+authentication:
+  type: oauth
+  discovery_url: https://cognito-idp.us-east-1.amazonaws.com/us-east-1_YYMy6hC3F/.well-known/openid-configuration
+  client_id: 1eulh5t29s9rsk6a8r1ahv739g

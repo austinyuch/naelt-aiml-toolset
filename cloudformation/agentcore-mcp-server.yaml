@@ -1,0 +1,55 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AgentCore MCP Server - Advocacy Content Generator for Judicial Justice'
+
+Parameters:
+  ImageUri:
+    Type: String
+    Default: '533267166136.dkr.ecr.us-east-1.amazonaws.com/advocacy-content-generator:latest'
+    Description: ECR image URI for the MCP server container
+  
+  ExecutionRoleArn:
+    Type: String
+    Default: 'arn:aws:iam::533267166136:role/AgentCoreExecutionRole-advocacy-content-generator'
+    Description: IAM execution role ARN for AgentCore Runtime
+  
+  CognitoUserPoolId:
+    Type: String
+    Default: 'us-east-1_YYMy6hC3F'
+    Description: Cognito User Pool ID for OAuth authentication
+  
+  CognitoClientId:
+    Type: String
+    Default: '1eulh5t29s9rsk6a8r1ahv739g'
+    Description: Cognito Client ID for OAuth authentication
+
+Resources:
+  AgentCoreRuntime:
+    Type: AWS::BedrockAgentCore::Runtime
+    Properties:
+      AgentRuntimeName: advocacy_content_generator_mcp
+      AgentRuntimeArtifact:
+        ContainerConfiguration:
+          ContainerUri: !Ref ImageUri
+      RoleArn: !Ref ExecutionRoleArn
+      NetworkConfiguration:
+        NetworkMode: PUBLIC
+      ProtocolConfiguration: MCP
+      AuthorizerConfiguration:
+        CustomJWTAuthorizer:
+          AllowedClients:
+            - !Ref CognitoClientId
+          DiscoveryUrl: !Sub 'https://cognito-idp.${AWS::Region}.amazonaws.com/${CognitoUserPoolId}/.well-known/openid-configuration'
+      Description: 'MCP server runtime for advocacy content generator'
+
+Outputs:
+  RuntimeId:
+    Description: AgentCore Runtime ID
+    Value: !GetAtt AgentCoreRuntime.AgentRuntimeId
+    Export:
+      Name: !Sub '${AWS::StackName}-RuntimeId'
+  
+  RuntimeArn:
+    Description: AgentCore Runtime ARN
+    Value: !GetAtt AgentCoreRuntime.AgentRuntimeArn
+    Export:
+      Name: !Sub '${AWS::StackName}-RuntimeArn'

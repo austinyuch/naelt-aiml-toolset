@@ -1,4 +1,5 @@
 # Multi-stage build for production optimization
+# Support multi-platform: ARM64 (AgentCore) and x86_64 (local testing)
 FROM node:24-alpine AS builder
 
 WORKDIR /app
@@ -18,6 +19,7 @@ COPY prompts/ ./prompts/
 RUN npm run build
 
 # Final production image
+# Support multi-platform: ARM64 (AgentCore) and x86_64 (local testing)
 FROM node:24-alpine
 
 WORKDIR /app
@@ -32,7 +34,7 @@ RUN npm ci --only=production
 # Copy built code from builder
 COPY --from=builder /app/dist ./dist
 
-# Copy prompt templates
+# Copy prompt templates (Requirement 7.4: Include prompts directory)
 COPY prompts/ ./prompts/
 
 # Create cache directory
@@ -45,12 +47,20 @@ RUN adduser -D -u 10001 appuser && \
 
 USER appuser
 
-# Health check
+# Requirement 7.3: Health check endpoint at /health
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:${PORT:-8000}/health || exit 1
+    CMD curl -f http://localhost:8000/health || exit 1
 
-# Expose port
+# Requirement 7.1: Expose port 8000 for MCP server
 EXPOSE 8000
 
+# Requirement 7.5: Set environment variables for AgentCore Runtime
+ENV SERVICE_MODE=mcp-only \
+    MCP_TRANSPORT=streamable-http \
+    PORT=8000 \
+    HOST=0.0.0.0 \
+    LOG_LEVEL=info
+
 # Start command
+# Requirement 7.2: Ensure /mcp path is accessible via MCP server
 CMD ["node", "dist/index.js"]

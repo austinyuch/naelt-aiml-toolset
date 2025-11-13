@@ -212,6 +212,28 @@ aws bedrock list-foundation-models \
   --query 'modelSummaries[?contains(modelId, `claude-sonnet-4-5`)]'
 ```
 
+## 🔐 AgentCore 整合（選用）
+
+如果要將服務部署到 AWS Bedrock AgentCore Runtime，需要先設定 Cognito 認證：
+
+### 設定 Cognito 認證
+
+```bash
+# 執行 Cognito 設定腳本
+./scripts/setup-cognito.sh
+
+# 查看生成的憑證
+cat cognito-credentials.txt
+
+# 重新整理過期的 Token
+./scripts/refresh-cognito-token.sh
+```
+
+詳細說明請參考：
+
+- [Cognito 設定指南](docs/cognito-setup-guide.md) - 完整的 Cognito 設定說明
+- [Cognito 快速參考](docs/cognito-quick-reference.md) - 常用指令快速參考
+
 ## 📚 詳細文件
 
 - [完整部署指南](docs/deployment-guide.md) - 詳細的部署步驟和配置說明
@@ -219,6 +241,8 @@ aws bedrock list-foundation-models \
 - [IAM 政策範本](docs/iam-policies.json) - IAM 角色和政策定義
 - [API 使用指南](docs/api-guide.md) - REST API 使用說明
 - [MCP 整合指南](docs/mcp-guide.md) - MCP 協議整合說明
+- [Cognito 設定指南](docs/cognito-setup-guide.md) - Cognito 認證設定
+- [Cognito 快速參考](docs/cognito-quick-reference.md) - Cognito 常用指令
 
 ## 🔐 安全性最佳實踐
 

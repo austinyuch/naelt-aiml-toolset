@@ -56,19 +56,19 @@ async function main(): Promise<void> {
 
     // Step 2: Initialize services
     log.info('Initializing services...');
-    
+
     // Import additional dependencies
     const { PromptBuilder } = await import('./prompts/PromptBuilder.js');
     const { PromptTemplateLoader } = await import('./prompts/PromptTemplateLoader.js');
     const { RateLimiter } = await import('./core/rateLimiter.js');
     const { CacheManager } = await import('./core/cache.js');
-    
+
     // Initialize core utilities
     const cacheManager = new CacheManager(config.cacheDir);
     const promptLoader = new PromptTemplateLoader();
     const promptBuilder = new PromptBuilder(promptLoader);
     const rateLimiter = new RateLimiter();
-    
+
     // Initialize services
     const templateService = new TemplateManagementService();
     const newsService = new NewsSearchService(newsApiClient, cacheManager);
@@ -111,8 +111,25 @@ async function main(): Promise<void> {
     if (serviceMode === 'unified' || serviceMode === 'mcp-only') {
       log.info('Starting MCP Server...');
       mcpServer = new MCPServer(orchestrator);
-      await mcpServer.start();
-      log.info('MCP Server started on stdio');
+
+      // Requirement 2.3: Support environment variable control for transport mode
+      const transport = config.mcpTransport || 'stdio';
+
+      if (transport === 'streamable-http') {
+        // Requirement 2.2: Use streamable-http transport for production
+        // In mcp-only mode, use the configured port
+        // In unified mode, the MCP server shares the Express app
+        if (serviceMode === 'mcp-only') {
+          httpServer = await mcpServer.startHttp(config.port, config.host);
+        } else {
+          // In unified mode, MCP endpoints are added to the existing Express app
+          // This is handled internally by the MCP server
+          await mcpServer.startHttp(config.port, config.host);
+        }
+      } else {
+        // Requirement 2.3: Use stdio transport for local development
+        await mcpServer.startStdio();
+      }
     }
 
     log.info('Application started successfully');

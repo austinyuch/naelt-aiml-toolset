@@ -26,6 +26,9 @@ credentials.yaml
 # AWS Credentials
 .aws/credentials
 .aws/config
+cognito-credentials.txt
+cognito-credentials.*.txt
+.bedrock_agentcore.yaml
 
 # SSH Keys
 id_rsa

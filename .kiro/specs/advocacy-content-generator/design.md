@@ -2,7 +2,7 @@
 
 ## 概述
 
-司法正義論述生成器後端服務是一個本地執行的 Python FastAPI 應用，提供 RESTful API 和 MCP (Model Context Protocol) 介面。服務整合新聞搜尋 API 和大型語言模型（LLM），協助使用者針對受害者權益、反廢死和司法不公等議題，生成適合不同社群平台的論述內容。
+司法正義論述生成器後端服務是一個本地執行的 Node.js/TypeScript 應用，提供 RESTful API 和 MCP (Model Context Protocol) 介面。服務整合新聞搜尋 API 和大型語言模型（LLM），協助使用者針對受害者權益、反廢死和司法不公等議題，生成適合不同社群平台的論述內容。
 
 ### 核心功能
 
@@ -11,14 +11,19 @@
 - 多平台格式優化（Instagram、Facebook、LINE）
 - 內容精煉與迭代改進
 - RESTful API 和 MCP 雙介面支援
+- **LangChain Agent 工具調用**（Phase 2 增強）
+- **RAG 檢索增強生成**（Module 3 準備）
+- **多輪對話記憶管理**（未來擴展）
 
 ### 技術棧
 
 - **後端框架**: Express.js (Node.js 20+)
 - **API 文件**: OpenAPI 3.0 (Swagger)
 - **LLM 整合**: AWS Bedrock Claude Sonnet 4.5
+- **LLM 框架**: LangChain 1.x (Agent、RAG、Memory)
 - **新聞 API**: Google News API 或類似服務
 - **MCP 支援**: @modelcontextprotocol/sdk (stdio transport)
+- **向量資料庫**: Chroma (用於 RAG 檢索)
 - **部署**: AWS ECS Fargate (Docker 容器化)
 - **測試**: Jest, Supertest (單元測試和整合測試)
 - **AWS 服務**: Bedrock, ECS, Fargate, ECR, CloudWatch, IAM
@@ -111,6 +116,384 @@ graph TB
 - **理由**: 關注點分離、可測試性、可維護性
 - **優點**: 清晰的職責劃分、易於擴展、支援 TDD
 - **層級**: API 層 → 編排層 → 服務層 → 外部整合層
+
+**決策 5: LangChain 漸進式整合策略**
+- **理由**: 基於 `docs/langchain-evaluation.md` 的評估結果，採用漸進式整合
+- **整合範圍**:
+  - ✅ **Agent 工具調用**: 簡化 ContentOrchestrator 複雜邏輯
+  - ✅ **RAG 檢索系統**: Module 3 判決分析的核心需求
+  - ⚠️ **Memory 管理**: 多輪對話場景（未來擴展）
+  - ❌ **不替換**: BedrockClient、PromptBuilder、CacheManager（保留現有穩定實作）
+- **實作方式**:
+  - 建立 LangChain 適配器層，保持與現有介面相容
+  - 使用 Feature Flag 控制 LangChain 功能啟用
+  - 支援 A/B 測試比較效能和品質
+- **版本**: LangChain 1.1.1, @langchain/core 1.1.0, @langchain/community 1.0.5, @langchain/aws 1.0.3
+
+## LangChain 整合設計
+
+### LangChain 架構層
+
+```mermaid
+graph TB
+    subgraph LangChain["LangChain 層（可選）"]
+        Agent[Agent Orchestrator]
+        RAG[RAG Knowledge Base]
+        Memory[Conversation Memory]
+    end
+
+    subgraph Service["服務層"]
+        Orchestrator[Content Orchestrator]
+        NewsService[News Search Service]
+        ContentService[Content Generation Service]
+    end
+
+    subgraph Client["客戶端層"]
+        BedrockAdapter[LangChain Bedrock Adapter]
+        BedrockClient[Native Bedrock Client]
+    end
+
+    Agent --> Orchestrator
+    RAG --> ContentService
+    Memory --> ContentService
+    
+    Orchestrator --> BedrockAdapter
+    Orchestrator --> BedrockClient
+    
+    BedrockAdapter --> AWS[AWS Bedrock]
+    BedrockClient --> AWS
+```
+
+### LangChain 整合決策
+
+**Phase 1: 評估與試驗（已完成）**
+- ✅ 完成 LangChain 評估報告（`docs/langchain-evaluation.md`）
+- ✅ 確定整合策略和優先級
+- ✅ 更新版本至 LangChain 1.x 穩定版
+
+**Phase 2: 特定功能整合（當前階段）**
+- 🔄 建立 LangChain 適配器層
+- 🔄 實作 Agent 工具調用功能
+- 🔄 準備 RAG 基礎設施
+
+**Phase 3: 生產驗證（未來）**
+- ⏳ 灰度發布和 A/B 測試
+- ⏳ 效能監控和優化
+- ⏳ 使用者反饋收集
+
+**Phase 4: 擴展應用（未來）**
+- ⏳ Module 3 RAG 系統完整實作
+- ⏳ 多輪對話支援
+- ⏳ 進階 Agent 功能
+
+### LangChain 元件設計
+
+#### 1. LangChain Bedrock 適配器
+
+```typescript
+// src/clients/LangChainBedrockAdapter.ts
+import { BedrockChat } from "@langchain/community/chat_models/bedrock";
+import { ILLMClient, LLMOptions } from '../interfaces/ILLMClient';
+
+/**
+ * LangChain Bedrock Adapter
+ * 
+ * 提供與現有 BedrockClient 相容的介面
+ * 使用 LangChain 的 BedrockChat 實作
+ */
+export class LangChainBedrockAdapter implements ILLMClient {
+  private llm: BedrockChat;
+
+  constructor(region: string = 'us-east-1') {
+    this.llm = new BedrockChat({
+      model: "anthropic.claude-sonnet-4-5-20250929-v1:0",
+      region,
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!
+      },
+      temperature: 0.7,
+      maxTokens: 4096
+    });
+  }
+
+  async generateCompletion(
+    prompt: string,
+    temperature: number = 0.7,
+    maxTokens: number = 4096,
+    systemPrompt?: string
+  ): Promise<string> {
+    const messages = systemPrompt
+      ? [
+          { role: "system" as const, content: systemPrompt },
+          { role: "user" as const, content: prompt }
+        ]
+      : [{ role: "user" as const, content: prompt }];
+
+    const response = await this.llm.invoke(messages);
+    return response.content as string;
+  }
+
+  async *generateCompletionStream(
+    prompt: string,
+    temperature: number = 0.7,
+    maxTokens: number = 4096,
+    systemPrompt?: string
+  ): AsyncGenerator<string> {
+    const messages = systemPrompt
+      ? [
+          { role: "system" as const, content: systemPrompt },
+          { role: "user" as const, content: prompt }
+        ]
+      : [{ role: "user" as const, content: prompt }];
+
+    const stream = await this.llm.stream(messages);
+    
+    for await (const chunk of stream) {
+      yield chunk.content as string;
+    }
+  }
+}
+```
+
+#### 2. Agent Orchestrator
+
+```typescript
+// src/services/AgentOrchestrator.ts
+import { createAgent, tool } from "langchain";
+import * as z from "zod";
+import { NewsSearchService } from './NewsSearchService';
+import { ContentGenerationService } from './ContentGenerationService';
+
+/**
+ * Agent Orchestrator
+ * 
+ * 使用 LangChain Agent 自動編排工作流程
+ * 簡化 ContentOrchestrator 的複雜邏輯
+ */
+export class AgentOrchestrator {
+  private agent: ReturnType<typeof createAgent>;
+
+  constructor(
+    private newsService: NewsSearchService,
+    private contentService: ContentGenerationService
+  ) {
+    this.agent = this.createAgent();
+  }
+
+  private createAgent() {
+    return createAgent({
+      model: "claude-sonnet-4-5-20250929",
+      tools: [
+        this.createSearchNewsTool(),
+        this.createGenerateContentTool(),
+        this.createRefineContentTool()
+      ]
+    });
+  }
+
+  private createSearchNewsTool() {
+    return tool(
+      async ({ keywords, limit }) => {
+        const results = await this.newsService.searchNews(keywords, limit);
+        return JSON.stringify(results);
+      },
+      {
+        name: "search_news",
+        description: "搜尋司法相關新聞文章",
+        schema: z.object({
+          keywords: z.array(z.string()).describe("搜尋關鍵字陣列"),
+          limit: z.number().optional().default(10).describe("最大結果數量")
+        })
+      }
+    );
+  }
+
+  private createGenerateContentTool() {
+    return tool(
+      async ({ userInput, topicTemplates, platformType, newsUrls }) => {
+        const newsContext = await this.newsService.fetchArticles(newsUrls);
+        const variants = await this.contentService.generateContent(
+          userInput,
+          topicTemplates,
+          platformType,
+          newsContext
+        );
+        return JSON.stringify(variants);
+      },
+      {
+        name: "generate_content",
+        description: "生成社群平台論述內容",
+        schema: z.object({
+          userInput: z.string().describe("使用者觀點和方向"),
+          topicTemplates: z.array(z.string()).describe("主題模板 ID"),
+          platformType: z.enum(["instagram", "facebook", "line"]).describe("目標平台"),
+          newsUrls: z.array(z.string()).describe("新聞文章 URL")
+        })
+      }
+    );
+  }
+
+  private createRefineContentTool() {
+    return tool(
+      async ({ contentId, feedback }) => {
+        const originalContent = await this.contentService.getContent(contentId);
+        const refined = await this.contentService.refineContent(
+          originalContent,
+          feedback
+        );
+        return JSON.stringify(refined);
+      },
+      {
+        name: "refine_content",
+        description: "根據反饋精煉內容",
+        schema: z.object({
+          contentId: z.string().describe("內容 ID"),
+          feedback: z.string().min(10).describe("使用者反饋")
+        })
+      }
+    );
+  }
+
+  /**
+   * 執行使用者任務
+   * 
+   * Agent 會自動決定需要調用哪些工具
+   */
+  async executeTask(userRequest: string): Promise<any> {
+    const result = await this.agent.invoke({
+      messages: [{ role: "user", content: userRequest }]
+    });
+    return result;
+  }
+}
+```
+
+#### 3. RAG Knowledge Base（Module 3 準備）
+
+```typescript
+// src/services/JudicialKnowledgeBase.ts
+import { Chroma } from "@langchain/community/vectorstores/chroma";
+import { BedrockEmbeddings } from "@langchain/aws";
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import { Document } from "@langchain/core/documents";
+import { RetrievalQAChain } from "langchain/chains";
+import { BedrockChat } from "@langchain/community/chat_models/bedrock";
+
+/**
+ * Judicial Knowledge Base
+ * 
+ * 使用 RAG 建立判決書知識庫
+ * 支援語義搜尋和問答
+ * 
+ * 用於 Module 3: 判決資料分析模組
+ */
+export class JudicialKnowledgeBase {
+  private vectorStore?: Chroma;
+  private qaChain?: RetrievalQAChain;
+  private embeddings: BedrockEmbeddings;
+  private llm: BedrockChat;
+
+  constructor() {
+    this.embeddings = new BedrockEmbeddings({
+      region: process.env.AWS_REGION || 'us-east-1',
+      model: "amazon.titan-embed-text-v1"
+    });
+
+    this.llm = new BedrockChat({
+      model: "anthropic.claude-sonnet-4-5-20250929-v1:0",
+      region: process.env.AWS_REGION || 'us-east-1'
+    });
+  }
+
+  async initialize(judgmentDocuments: Document[]): Promise<void> {
+    const textSplitter = new RecursiveCharacterTextSplitter({
+      chunkSize: 1000,
+      chunkOverlap: 200
+    });
+
+    const splitDocs = await textSplitter.splitDocuments(judgmentDocuments);
+
+    this.vectorStore = await Chroma.fromDocuments(
+      splitDocs,
+      this.embeddings,
+      {
+        collectionName: "judicial-cases",
+        url: process.env.CHROMA_URL || "http://localhost:8000"
+      }
+    );
+
+    this.qaChain = RetrievalQAChain.fromLLM(
+      this.llm,
+      this.vectorStore.asRetriever({ k: 5 })
+    );
+  }
+
+  async searchSimilarCases(query: string, k: number = 5): Promise<Document[]> {
+    if (!this.vectorStore) {
+      throw new Error('Vector store not initialized');
+    }
+    return await this.vectorStore.similaritySearch(query, k);
+  }
+
+  async query(question: string): Promise<string> {
+    if (!this.qaChain) {
+      throw new Error('QA chain not initialized');
+    }
+    const response = await this.qaChain.invoke({ query: question });
+    return response.text;
+  }
+}
+```
+
+#### 4. Feature Flag 配置
+
+```typescript
+// src/config/features.ts
+export interface FeatureFlags {
+  useLangChainAgent: boolean;
+  useLangChainRAG: boolean;
+  useLangChainMemory: boolean;
+}
+
+export const features: FeatureFlags = {
+  useLangChainAgent: process.env.FEATURE_LANGCHAIN_AGENT === 'true',
+  useLangChainRAG: process.env.FEATURE_LANGCHAIN_RAG === 'true',
+  useLangChainMemory: process.env.FEATURE_LANGCHAIN_MEMORY === 'true'
+};
+
+// src/factories/LLMClientFactory.ts
+import { ILLMClient } from '../interfaces/ILLMClient';
+import { BedrockClient } from '../clients/BedrockClient';
+import { LangChainBedrockAdapter } from '../clients/LangChainBedrockAdapter';
+import { features } from '../config/features';
+
+export class LLMClientFactory {
+  static create(): ILLMClient {
+    if (features.useLangChainAgent) {
+      return new LangChainBedrockAdapter();
+    }
+    return new BedrockClient();
+  }
+}
+```
+
+### LangChain 整合優勢
+
+1. **Agent 工具調用**: 自動決策工作流程，減少 30-40% 的編排邏輯程式碼
+2. **RAG 檢索系統**: 快速建立判決書知識庫，節省 4-6 週開發時間
+3. **多輪對話記憶**: 提升內容精煉的上下文連貫性
+4. **可插拔設計**: 透過介面隔離和 Feature Flag，保持架構靈活性
+5. **社群生態**: 豐富的整合選項和活躍的社群支援
+
+### LangChain 整合風險與緩解
+
+| 風險 | 影響 | 緩解策略 |
+|------|------|---------|
+| API 破壞性變更 | 高 | 鎖定版本 1.x，定期更新測試 |
+| 效能退化 | 中 | 基準測試，關鍵路徑保留直接調用 |
+| 除錯困難 | 中 | 增加日誌，使用 LangSmith 追蹤 |
+| 學習曲線 | 中 | 提供培訓，建立最佳實踐文件 |
 
 ## 元件與介面
 
@@ -1563,6 +1946,16 @@ REFINE_LIMIT_PER_HOUR=5
 
 # API 認證
 API_KEYS=key1,key2,key3
+
+# LangChain Feature Flags（Phase 2 增強）
+FEATURE_LANGCHAIN_AGENT=false      # 啟用 Agent 工具調用
+FEATURE_LANGCHAIN_RAG=false        # 啟用 RAG 檢索系統
+FEATURE_LANGCHAIN_MEMORY=false     # 啟用多輪對話記憶
+
+# LangChain 配置
+CHROMA_URL=http://localhost:8000   # Chroma 向量資料庫 URL
+LANGSMITH_TRACING=false            # LangSmith 追蹤（可選）
+LANGSMITH_API_KEY=                 # LangSmith API Key（可選）
 ```
 
 **.env 檔案範例（本地開發）**
@@ -1872,7 +2265,12 @@ sequenceDiagram
     "swagger-ui-express": "^5.0.0",
     "zod": "^3.22.4",
     "winston": "^3.11.0",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "langchain": "^1.1.1",
+    "@langchain/core": "^1.1.0",
+    "@langchain/community": "^1.0.5",
+    "@langchain/aws": "^1.0.3",
+    "chromadb": "^1.8.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
@@ -1895,6 +2293,18 @@ sequenceDiagram
   }
 }
 ```
+
+**LangChain 依賴說明**:
+- `langchain@1.1.1` - 主套件，包含核心功能和 Agent 架構
+- `@langchain/core@1.1.0` - 核心抽象和 Schema 定義
+- `@langchain/community@1.0.5` - 第三方整合（Chroma, FAISS 等）
+- `@langchain/aws@1.0.3` - AWS 服務整合（Bedrock, S3 等）
+- `chromadb@1.8.0` - 向量資料庫（用於 RAG）
+
+**版本鎖定策略**:
+- 開發環境：使用 `^1.1.1` 自動獲取小版本更新
+- 生產環境：鎖定版本 `1.1.1` 避免意外變更
+- 參考：`docs/langchain-version-update.md`
 
 **Dockerfile（生產環境優化）**
 

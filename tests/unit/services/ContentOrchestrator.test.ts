@@ -15,6 +15,16 @@ import { NewsArticle, ContentVariant, PlatformType } from '../../../src/types/do
 jest.mock('../../../src/services/NewsSearchService.js');
 jest.mock('../../../src/services/ContentGenerationService.js');
 jest.mock('../../../src/services/TemplateManagementService.js');
+jest.mock('../../../src/services/AgentOrchestrator.js');
+
+// Mock feature flags to disable LangChain Agent by default
+jest.mock('../../../src/config/features.js', () => ({
+  features: {
+    useLangChainAgent: false,
+    useLangChainRAG: false,
+    useLangChainMemory: false
+  }
+}));
 
 describe('ContentOrchestrator', () => {
   let orchestrator: ContentOrchestrator;

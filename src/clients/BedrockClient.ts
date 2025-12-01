@@ -7,6 +7,8 @@
  * Requirements: 7.1, 7.4, 7.5, 9.4
  */
 
+import { ILLMClient } from '../interfaces/ILLMClient.js';
+
 /**
  * Bedrock Client Configuration
  */
@@ -33,10 +35,11 @@ export interface LLMOptions {
  * 
  * Provides methods to generate text completions using Claude Sonnet 4.5
  * Supports both standard and streaming responses
+ * Implements ILLMClient interface for interoperability
  * 
  * Requirement 7.1: Integrate with AWS Bedrock Claude Sonnet 4.5
  */
-export class BedrockClient {
+export class BedrockClient implements ILLMClient {
   private modelId: string;
   private region: string;
 
@@ -115,7 +118,7 @@ export class BedrockClient {
 
     // Mock streaming implementation
     const fullResponse = await this.mockGenerate(prompt, temperature, maxTokens, systemPrompt);
-    
+
     // Simulate streaming by yielding chunks
     const chunkSize = 10;
     for (let i = 0; i < fullResponse.length; i += chunkSize) {

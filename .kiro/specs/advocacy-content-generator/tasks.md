@@ -218,100 +218,100 @@
 
 基於 `docs/langchain-evaluation.md` 的評估結果，採用漸進式整合策略。
 
-- [ ] 15. LangChain 基礎設施建置（TDD）
+- [x] 15. LangChain 基礎設施建置（TDD）
 
-  - [ ] 15.1 安裝 LangChain 依賴
+  - [x] 15.1 安裝 LangChain 依賴
     - 安裝 langchain@1.1.1, @langchain/core@1.1.0, @langchain/community@1.0.5, @langchain/aws@1.0.3
     - 安裝 chromadb@1.8.0（用於 RAG）
     - 更新 package.json 和 package-lock.json
     - _參考: docs/langchain-evaluation.md, docs/langchain-version-update.md_
-  - [ ] 15.2 建立 LangChain 介面定義
+  - [x] 15.2 建立 LangChain 介面定義
     - 建立 src/interfaces/ILLMClient.ts 定義統一的 LLM 客戶端介面
     - 確保 BedrockClient 和 LangChainBedrockAdapter 都實作此介面
     - _需求: 設計文件 - LangChain 整合設計_
-  - [ ] 15.3 實作 Feature Flag 配置
+  - [x] 15.3 實作 Feature Flag 配置
     - 建立 src/config/features.ts 定義 FeatureFlags 介面
     - 實作 Feature Flag 讀取邏輯（從環境變數）
     - 支援 useLangChainAgent, useLangChainRAG, useLangChainMemory
     - _需求: 設計文件 - Feature Flag 配置_
 
-- [ ] 16. LangChain Bedrock 適配器實作（TDD）
+- [x] 16. LangChain Bedrock 適配器實作（TDD）
 
-  - [ ] 16.1 撰寫適配器測試（TDD Red Phase）
+  - [x] 16.1 撰寫適配器測試（TDD Red Phase）
     - 建立 tests/unit/clients/LangChainBedrockAdapter.test.ts
     - 測試 generateCompletion 方法
     - 測試 generateCompletionStream 方法
     - 測試錯誤處理
     - _需求: 設計文件 - LangChain Bedrock 適配器_
-  - [ ] 16.2 實作適配器（TDD Green Phase）
+  - [x] 16.2 實作適配器（TDD Green Phase）
     - 建立 src/clients/LangChainBedrockAdapter.ts
     - 實作 ILLMClient 介面
     - 整合 @langchain/community BedrockChat
     - 實作串流支援
     - _需求: 設計文件 - LangChain Bedrock 適配器_
-  - [ ] 16.3 實作 LLM 客戶端工廠
+  - [x] 16.3 實作 LLM 客戶端工廠
     - 建立 tests/unit/factories/LLMClientFactory.test.ts
     - 建立 src/factories/LLMClientFactory.ts
     - 根據 Feature Flag 選擇 BedrockClient 或 LangChainBedrockAdapter
     - _需求: 設計文件 - Feature Flag 配置_
 
-- [ ] 17. Agent Orchestrator 實作（TDD）
+- [x] 17. Agent Orchestrator 實作（TDD）
 
-  - [ ] 17.1 撰寫 Agent Orchestrator 測試
+  - [x] 17.1 撰寫 Agent Orchestrator 測試
     - 建立 tests/unit/services/AgentOrchestrator.test.ts
     - 測試 Agent 工具定義
     - 測試 executeTask 方法
     - 測試工具調用邏輯
     - _需求: 設計文件 - Agent Orchestrator_
-  - [ ] 17.2 實作 Agent Orchestrator
+  - [x] 17.2 實作 Agent Orchestrator
     - 建立 src/services/AgentOrchestrator.ts
     - 使用 langchain createAgent 建立 Agent
     - 實作 search_news 工具
     - 實作 generate_content 工具
     - 實作 refine_content 工具
     - _需求: 設計文件 - Agent Orchestrator_
-  - [ ] 17.3 整合 Agent 到 ContentOrchestrator
+  - [x] 17.3 整合 Agent 到 ContentOrchestrator
     - 更新 ContentOrchestrator 支援 Agent 模式
     - 根據 Feature Flag 選擇使用 Agent 或傳統編排
     - 保持向後相容性
     - _需求: 設計文件 - Agent Orchestrator_
 
-- [ ] 18. RAG Knowledge Base 準備（Module 3）
+- [x] 18. RAG Knowledge Base 準備（Module 3）
 
-  - [ ] 18.1 撰寫 RAG 基礎測試
+  - [x] 18.1 撰寫 RAG 基礎測試
     - 建立 tests/unit/services/JudicialKnowledgeBase.test.ts
     - 測試向量資料庫初始化
     - 測試相似案例搜尋
     - 測試問答查詢
     - _需求: 設計文件 - RAG Knowledge Base_
-  - [ ] 18.2 實作 RAG Knowledge Base
+  - [x] 18.2 實作 RAG Knowledge Base
     - 建立 src/services/JudicialKnowledgeBase.ts
     - 整合 Chroma 向量資料庫
     - 實作 BedrockEmbeddings
     - 實作 RetrievalQAChain
     - 實作文件分割和嵌入邏輯
     - _需求: 設計文件 - RAG Knowledge Base_
-  - [ ] 18.3 建立 RAG 配置和環境
+  - [x] 18.3 建立 RAG 配置和環境
     - 配置 Chroma 連線設定
     - 建立測試用判決書文件
     - 實作文件載入器
     - _需求: 設計文件 - RAG Knowledge Base_
 
-- [ ] 19. LangChain 整合測試
+- [x] 19. LangChain 整合測試
 
-  - [ ] 19.1 效能基準測試
+  - [x] 19.1 效能基準測試
     - 建立 tests/performance/langchain-benchmark.test.ts
     - 比較 BedrockClient vs LangChainBedrockAdapter 效能
     - 測試 Agent 執行效能
     - 設定效能閾值（允許 10-20% 延遲）
     - _需求: docs/langchain-evaluation.md - 效能影響_
-  - [ ] 19.2 Agent 整合測試
+  - [x] 19.2 Agent 整合測試
     - 建立 tests/integration/langchain-agent.integration.test.ts
     - 測試完整的 Agent 工作流程
     - 測試多步驟任務執行
     - 測試錯誤恢復機制
     - _需求: 設計文件 - Agent Orchestrator_
-  - [ ] 19.3 RAG 整合測試
+  - [x] 19.3 RAG 整合測試
     - 建立 tests/integration/langchain-rag.integration.test.ts
     - 測試向量資料庫操作
     - 測試語義搜尋準確性
@@ -338,7 +338,7 @@
     - 記錄常見問題和解決方案
     - _需求: docs/langchain-evaluation.md_
 
-- [ ] 21. 生產環境驗證
+- [ ]* 21. 生產環境驗證
 
   - [ ] 21.1 A/B 測試框架
     - 實作 A/B 測試中介軟體

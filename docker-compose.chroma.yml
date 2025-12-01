@@ -1,0 +1,57 @@
+# Chroma Vector Database Docker Compose Configuration
+# 用於 RAG (Retrieval-Augmented Generation) 功能
+# 可用於開發、測試和生產環境
+
+version: '3.8'
+
+services:
+  chroma:
+    image: chromadb/chroma:latest
+    container_name: advocacy-chroma
+    ports:
+      - "${CHROMA_PORT:-8000}:8000"
+    volumes:
+      # 持久化向量資料庫數據
+      - chroma-data:/chroma/chroma
+    environment:
+      # Chroma 配置
+      - IS_PERSISTENT=TRUE
+      - ANONYMIZED_TELEMETRY=${CHROMA_TELEMETRY:-FALSE}
+      # 認證設置（生產環境建議啟用）
+      - CHROMA_SERVER_AUTH_CREDENTIALS_PROVIDER=${CHROMA_AUTH_PROVIDER:-chromadb.auth.token.TokenAuthCredentialsProvider}
+      - CHROMA_SERVER_AUTH_CREDENTIALS=${CHROMA_AUTH_TOKEN:-}
+      - CHROMA_SERVER_AUTH_TOKEN_TRANSPORT_HEADER=${CHROMA_AUTH_HEADER:-X-Chroma-Token}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - advocacy-network
+
+  # 可選：Chroma 管理界面（僅開發環境）
+  chroma-ui:
+    image: ghcr.io/amikos-tech/chromadb-admin:latest
+    container_name: advocacy-chroma-ui
+    ports:
+      - "${CHROMA_UI_PORT:-3001}:3000"
+    environment:
+      - CHROMA_URL=http://chroma:8000
+    depends_on:
+      - chroma
+    profiles:
+      - dev
+    networks:
+      - advocacy-network
+
+volumes:
+  chroma-data:
+    driver: local
+    name: advocacy-chroma-data
+
+networks:
+  advocacy-network:
+    driver: bridge
+    name: advocacy-network

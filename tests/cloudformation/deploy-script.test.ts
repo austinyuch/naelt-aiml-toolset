@@ -33,7 +33,8 @@ describe('CloudFormation Deployment Script', () => {
     test('should contain ECR push commands', () => {
         if (fs.existsSync(scriptPath)) {
             const content = fs.readFileSync(scriptPath, 'utf8');
-            expect(content).toContain('docker push');
+            // Script uses 'docker buildx build --push' instead of separate 'docker push'
+            expect(content).toContain('--push');
             expect(content).toContain('ecr');
         }
     });

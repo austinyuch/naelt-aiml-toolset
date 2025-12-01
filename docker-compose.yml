@@ -17,6 +17,8 @@ services:
       - API_KEYS=${API_KEYS}
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - CACHE_DIR=/app/.cache
+      - CHROMA_URL=${CHROMA_URL:-http://chroma:8000}
+      - FEATURE_LANGCHAIN_RAG=${FEATURE_LANGCHAIN_RAG:-false}
     volumes:
       # Mount cache directory
       - cache-data:/app/.cache
@@ -29,7 +31,29 @@ services:
       timeout: 5s
       retries: 3
       start_period: 60s
+    depends_on:
+      - chroma
+
+  # Chroma Vector Database (for RAG functionality)
+  chroma:
+    image: chromadb/chroma:latest
+    container_name: advocacy-chroma
+    ports:
+      - "8001:8000"  # Expose on 8001 to avoid conflict with API
+    volumes:
+      - chroma-data:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+      - ANONYMIZED_TELEMETRY=${CHROMA_TELEMETRY:-FALSE}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
 volumes:
   cache-data:
+    driver: local
+  chroma-data:
     driver: local

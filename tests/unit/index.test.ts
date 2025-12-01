@@ -18,11 +18,11 @@ describe('Application Startup', () => {
     originalEnv = { ...process.env };
 
     // Spy on console methods
-    consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
-    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
-    
+    consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => { });
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
+
     // Spy on process.exit
-    processExitSpy = jest.spyOn(process, 'exit').mockImplementation((code?: number) => {
+    processExitSpy = jest.spyOn(process, 'exit').mockImplementation((code?: string | number | null | undefined): never => {
       throw new Error(`Process.exit called with code ${code}`);
     });
   });
@@ -43,7 +43,7 @@ describe('Application Startup', () => {
      */
     it('should support unified service mode', () => {
       process.env.SERVICE_MODE = 'unified';
-      
+
       // In unified mode, both API and MCP should be initialized
       // This will be tested through integration tests
       expect(process.env.SERVICE_MODE).toBe('unified');
@@ -54,7 +54,7 @@ describe('Application Startup', () => {
      */
     it('should support api-only service mode', () => {
       process.env.SERVICE_MODE = 'api-only';
-      
+
       // In api-only mode, only API should be initialized
       expect(process.env.SERVICE_MODE).toBe('api-only');
     });
@@ -64,7 +64,7 @@ describe('Application Startup', () => {
      */
     it('should support mcp-only service mode', () => {
       process.env.SERVICE_MODE = 'mcp-only';
-      
+
       // In mcp-only mode, only MCP should be initialized
       expect(process.env.SERVICE_MODE).toBe('mcp-only');
     });
@@ -74,7 +74,7 @@ describe('Application Startup', () => {
      */
     it('should default to unified mode if SERVICE_MODE not specified', () => {
       delete process.env.SERVICE_MODE;
-      
+
       // Should default to unified
       const mode = process.env.SERVICE_MODE || 'unified';
       expect(mode).toBe('unified');
@@ -106,7 +106,7 @@ describe('Application Startup', () => {
     it('should log listening address when API starts', () => {
       const port = 8000;
       const expectedLog = `Express API server listening on port ${port}`;
-      
+
       expect(expectedLog).toContain('listening on port');
       expect(expectedLog).toContain(port.toString());
     });
@@ -116,7 +116,7 @@ describe('Application Startup', () => {
      */
     it('should log MCP server start message', () => {
       const expectedLog = 'MCP Server started on stdio';
-      
+
       expect(expectedLog).toContain('MCP Server');
       expect(expectedLog).toContain('stdio');
     });
@@ -129,7 +129,7 @@ describe('Application Startup', () => {
     it('should handle SIGTERM signal', () => {
       const signal = 'SIGTERM';
       const expectedLog = `Received ${signal}, shutting down gracefully...`;
-      
+
       expect(expectedLog).toContain('SIGTERM');
       expect(expectedLog).toContain('shutting down gracefully');
     });
@@ -140,7 +140,7 @@ describe('Application Startup', () => {
     it('should handle SIGINT signal', () => {
       const signal = 'SIGINT';
       const expectedLog = `Received ${signal}, shutting down gracefully...`;
-      
+
       expect(expectedLog).toContain('SIGINT');
       expect(expectedLog).toContain('shutting down gracefully');
     });
@@ -150,7 +150,7 @@ describe('Application Startup', () => {
      */
     it('should shutdown within 5 seconds', async () => {
       const startTime = Date.now();
-      
+
       // Simulate graceful shutdown
       const shutdownPromise = new Promise<void>((resolve) => {
         setTimeout(() => {
@@ -159,7 +159,7 @@ describe('Application Startup', () => {
       });
 
       await shutdownPromise;
-      
+
       const duration = Date.now() - startTime;
       expect(duration).toBeLessThan(5000);
     });
@@ -169,7 +169,7 @@ describe('Application Startup', () => {
      */
     it('should exit with code 0 on graceful shutdown', () => {
       const exitCode = 0;
-      
+
       expect(exitCode).toBe(0);
     });
   });
@@ -182,7 +182,7 @@ describe('Application Startup', () => {
       const error = new Error('Startup failed');
       const expectedLog = 'Failed to start application:';
       const expectedExitCode = 1;
-      
+
       expect(expectedLog).toContain('Failed to start application');
       expect(expectedExitCode).toBe(1);
     });
@@ -193,7 +193,7 @@ describe('Application Startup', () => {
     it('should handle missing configuration gracefully', () => {
       // Remove required environment variables
       delete process.env.AWS_REGION;
-      
+
       // Should still have defaults from config
       const defaultRegion = 'us-east-1';
       expect(defaultRegion).toBe('us-east-1');
@@ -208,7 +208,7 @@ describe('Application Startup', () => {
       process.env.PORT = '3000';
       process.env.AWS_REGION = 'us-west-2';
       process.env.LOG_LEVEL = 'debug';
-      
+
       expect(process.env.PORT).toBe('3000');
       expect(process.env.AWS_REGION).toBe('us-west-2');
       expect(process.env.LOG_LEVEL).toBe('debug');
@@ -220,10 +220,10 @@ describe('Application Startup', () => {
     it('should use default values when environment variables not specified', () => {
       delete process.env.PORT;
       delete process.env.LOG_LEVEL;
-      
+
       const defaultPort = 8000;
       const defaultLogLevel = 'info';
-      
+
       expect(defaultPort).toBe(8000);
       expect(defaultLogLevel).toBe('info');
     });
@@ -242,7 +242,7 @@ describe('Application Startup', () => {
         'Start API server (if enabled)',
         'Start MCP server (if enabled)'
       ];
-      
+
       expect(initOrder).toHaveLength(6);
       expect(initOrder[0]).toBe('Load configuration');
       expect(initOrder[initOrder.length - 1]).toContain('MCP server');
@@ -257,7 +257,7 @@ describe('Application Startup', () => {
         'ContentGenerationService',
         'TemplateManagementService'
       ];
-      
+
       expect(dependencies).toHaveLength(3);
       expect(dependencies).toContain('NewsSearchService');
       expect(dependencies).toContain('ContentGenerationService');
@@ -271,10 +271,10 @@ describe('Application Startup', () => {
      */
     it('should start API server in unified mode', () => {
       process.env.SERVICE_MODE = 'unified';
-      
-      const shouldStartAPI = process.env.SERVICE_MODE === 'unified' || 
-                            process.env.SERVICE_MODE === 'api-only';
-      
+
+      const shouldStartAPI = process.env.SERVICE_MODE === 'unified' ||
+        process.env.SERVICE_MODE === 'api-only';
+
       expect(shouldStartAPI).toBe(true);
     });
 
@@ -283,10 +283,10 @@ describe('Application Startup', () => {
      */
     it('should start API server in api-only mode', () => {
       process.env.SERVICE_MODE = 'api-only';
-      
-      const shouldStartAPI = process.env.SERVICE_MODE === 'unified' || 
-                            process.env.SERVICE_MODE === 'api-only';
-      
+
+      const shouldStartAPI = process.env.SERVICE_MODE === 'unified' ||
+        process.env.SERVICE_MODE === 'api-only';
+
       expect(shouldStartAPI).toBe(true);
     });
 
@@ -295,10 +295,10 @@ describe('Application Startup', () => {
      */
     it('should NOT start API server in mcp-only mode', () => {
       process.env.SERVICE_MODE = 'mcp-only';
-      
-      const shouldStartAPI = process.env.SERVICE_MODE === 'unified' || 
-                            process.env.SERVICE_MODE === 'api-only';
-      
+
+      const shouldStartAPI = process.env.SERVICE_MODE === 'unified' ||
+        process.env.SERVICE_MODE === 'api-only';
+
       expect(shouldStartAPI).toBe(false);
     });
   });
@@ -309,10 +309,10 @@ describe('Application Startup', () => {
      */
     it('should start MCP server in unified mode', () => {
       process.env.SERVICE_MODE = 'unified';
-      
-      const shouldStartMCP = process.env.SERVICE_MODE === 'unified' || 
-                            process.env.SERVICE_MODE === 'mcp-only';
-      
+
+      const shouldStartMCP = process.env.SERVICE_MODE === 'unified' ||
+        process.env.SERVICE_MODE === 'mcp-only';
+
       expect(shouldStartMCP).toBe(true);
     });
 
@@ -321,10 +321,10 @@ describe('Application Startup', () => {
      */
     it('should start MCP server in mcp-only mode', () => {
       process.env.SERVICE_MODE = 'mcp-only';
-      
-      const shouldStartMCP = process.env.SERVICE_MODE === 'unified' || 
-                            process.env.SERVICE_MODE === 'mcp-only';
-      
+
+      const shouldStartMCP = process.env.SERVICE_MODE === 'unified' ||
+        process.env.SERVICE_MODE === 'mcp-only';
+
       expect(shouldStartMCP).toBe(true);
     });
 
@@ -333,10 +333,10 @@ describe('Application Startup', () => {
      */
     it('should NOT start MCP server in api-only mode', () => {
       process.env.SERVICE_MODE = 'api-only';
-      
-      const shouldStartMCP = process.env.SERVICE_MODE === 'unified' || 
-                            process.env.SERVICE_MODE === 'mcp-only';
-      
+
+      const shouldStartMCP = process.env.SERVICE_MODE === 'unified' ||
+        process.env.SERVICE_MODE === 'mcp-only';
+
       expect(shouldStartMCP).toBe(false);
     });
   });

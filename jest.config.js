@@ -24,4 +24,7 @@ export default {
       },
     ],
   },
+  transformIgnorePatterns: [
+    "node_modules/(?!(p-retry|@langchain|langchain|chromadb|is-network-error)/)"
+  ],
 };

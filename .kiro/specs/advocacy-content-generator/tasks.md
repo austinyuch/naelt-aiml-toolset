@@ -318,20 +318,20 @@
     - 測試問答品質
     - _需求: 設計文件 - RAG Knowledge Base_
 
-- [ ] 20. LangChain 文件與配置
+- [x] 20. LangChain 文件與配置
 
-  - [ ] 20.1 更新環境變數配置
+  - [x] 20.1 更新環境變數配置
     - 更新 .env.example 加入 LangChain Feature Flags
     - 加入 CHROMA_URL 配置
     - 加入 FEATURE_LANGCHAIN_AGENT, FEATURE_LANGCHAIN_RAG 等
     - _需求: 設計文件 - Feature Flag 配置_
-  - [ ] 20.2 更新 README 文件
+  - [x] 20.2 更新 README 文件
     - 加入 LangChain 整合說明
     - 加入 Feature Flag 使用指南
     - 加入效能比較數據
     - 加入 RAG 使用範例
     - _需求: docs/langchain-evaluation.md_
-  - [ ] 20.3 建立 LangChain 最佳實踐文件
+  - [x] 20.3 建立 LangChain 最佳實踐文件
     - 建立 docs/langchain-best-practices.md
     - 記錄 Agent 設計模式
     - 記錄 RAG 優化技巧
